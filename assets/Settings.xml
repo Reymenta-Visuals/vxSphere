@@ -13,7 +13,7 @@
 	<FboWidth value="640"/>
 	<FboHeight value="480"/>
 	<OSCEnabled value="1"/>
-	<OSCReceiverPort value="7000"/>
+	<OSCReceiverPort value="9001"/>
 	<OSCDestinationPort value="7001"/>
 	<OSCDestinationHost value="127.0.0.1"/>
 	<OSCDestinationPort2 value="7002"/>
@@ -30,5 +30,6 @@
 	<WindowSize value="1024"/>
 	<Info value=""/>
 	<AssetsPath value=""/>
+	<UseLineIn value="0"/>
 </settings>
 

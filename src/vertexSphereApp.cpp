@@ -40,6 +40,7 @@ void vertexSphereApp::prepareSettings(Settings *settings)
 		bInitialized = spoutsender.CreateSender(SenderName, g_Width, g_Height);
 		mOutputResolution = Vec2i(g_Width, g_Height);
 	}
+	settings->enableConsoleWindow();
 	mBatchass->log("prepareSettings done");
 }
 
@@ -59,7 +60,7 @@ void vertexSphereApp::setup()
 	// instanciate the audio class
 	//mAudio = AudioWrapper::create(mParameterBag, mBatchass->getTexturesRef());
 
-	mRotationSpeed = 0.010f;
+	mRotationSpeed = 0.05f;
 	mAngle = 0.0f;
 	mAxis = Vec3f(0.0f, 1.0f, 0.0f);
 	mQuat = Quatf(mAxis, mAngle);
@@ -79,25 +80,28 @@ void vertexSphereApp::setup()
 	mFbo.getTexture(0).setFlipped(true);
 	//audio
 	// linein
-	auto ctx = audio::Context::master();
-	mLineIn = ctx->createInputDeviceNode();
-
-	auto scopeLineInFmt = audio::MonitorSpectralNode::Format().fftSize(2048).windowSize(1024);
-	mMonitorLineInSpectralNode = ctx->makeNode(new audio::MonitorSpectralNode(scopeLineInFmt));
-
-	mLineIn >> mMonitorLineInSpectralNode;
-
-	mLineIn->enable();
-	ctx->enable();
-	// audio in multiplication factor
-	mAudioMultFactor = 1.0;
-	maxVolume = 0.0f;
-	mData = new float[1024];
-	for (int i = 0; i < 1024; i++)
+	if (mParameterBag->mUseLineIn)
 	{
-		mData[i] = 0;
-	}
+		auto ctx = audio::Context::master();
+		mLineIn = ctx->createInputDeviceNode();
 
+		auto scopeLineInFmt = audio::MonitorSpectralNode::Format().fftSize(2048).windowSize(1024);
+		mMonitorLineInSpectralNode = ctx->makeNode(new audio::MonitorSpectralNode(scopeLineInFmt));
+
+		mLineIn >> mMonitorLineInSpectralNode;
+
+		mLineIn->enable();
+		ctx->enable();
+		// audio in multiplication factor
+		mAudioMultFactor = 1.0;
+		maxVolume = 0.0f;
+		mData = new float[1024];
+		for (int i = 0; i < 1024; i++)
+		{
+			mData[i] = 0;
+		}
+
+	}
 }
 void vertexSphereApp::fileDrop(FileDropEvent event)
 {
@@ -119,14 +123,21 @@ void vertexSphereApp::mouseDown(MouseEvent event)
 {
 	mRotate = !mRotate;
 }
-void vertexSphereApp::update(){
-	//audio
-	mMagSpectrum = mMonitorLineInSpectralNode->getMagSpectrum();
-	if (mMagSpectrum.empty())
-		return;
-	if (mRotate)
+void vertexSphereApp::update()
+{
+	maxVolume = 0.0;
+	if (mParameterBag->mOSCEnabled) mOSC->update();
+	if (mParameterBag->newMsg)
 	{
-		maxVolume = 0.0;
+		mParameterBag->newMsg = false;
+		printf("%s", mParameterBag->mMsg.c_str());
+	}
+	if (mParameterBag->mUseLineIn)
+	{
+		//audio
+		mMagSpectrum = mMonitorLineInSpectralNode->getMagSpectrum();
+		if (mMagSpectrum.empty())
+			return;
 		size_t mDataSize = mMagSpectrum.size();
 		if (mDataSize > 0)
 		{
@@ -143,13 +154,26 @@ void vertexSphereApp::update(){
 				}
 			}
 		}
-		mAngle += mRotationSpeed;
 	}
 	else
 	{
-		maxVolume = 0.0;
+		// use volume from liveOSC
+		if (mParameterBag->liveMeter > 0) maxVolume = mParameterBag->liveMeter * 200.0; //take over the mic volume
+		if (maxVolume == 0)
+		{
+			// start
+			mRotate = false;
+			mAngle = 1.40; //radians for 90 degrees
+		}
+		if ( mParameterBag->mBeat > 63 ) mRotate = true;
 	}
+	if (mRotate)
+	{
+		mAngle += mRotationSpeed;
+	}
+
 	mQuat.set(mAxis, mAngle);
+
 	getWindow()->setTitle("(" + toString(floor(getAverageFps())) + " fps) Sphere");
 }
 
@@ -170,7 +194,7 @@ void vertexSphereApp::draw()
 	unsigned int width, height;
 
 	mFbo.bindFramebuffer();
-	gl::clear();
+	gl::clear(ColorA(0.1,0.0,0.1));
 	gl::setViewport(getWindowBounds());
 
 	mTexture.enableAndBind();
@@ -183,7 +207,7 @@ void vertexSphereApp::draw()
 	gl::pushModelView();
 	gl::translate(Vec3f(0.5f*g_Width, 0.5f*g_Height, 0));
 	gl::rotate(mQuat);
-	gl::drawSphere(Vec3f(0, 0, 0), g_Width * 0.21, 250);
+	gl::drawSphere(Vec3f(0, 0, 0), g_Width * 0.15, 400);// add more segments to refine peaks
 	gl::popModelView();
 	mShader.unbind();
 	mTexture.unbind();
