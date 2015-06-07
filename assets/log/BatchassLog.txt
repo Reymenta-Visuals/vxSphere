@@ -1,0 +1,11 @@
+[21:14:20] Batchass constructor
+[21:14:20] start
+[21:14:20] Window 2: 1440x900
+[21:14:20]  mMainDisplayWidth1600 mMainDisplayHeight900
+[21:14:20]  mRenderX1600 mRenderY0
+[21:14:20] prepareSettings done
+[21:14:20] setup
+[21:20:8] shutdown
+[21:20:8] shutdown
+[21:20:8] shutdown
+[21:20:8] quit

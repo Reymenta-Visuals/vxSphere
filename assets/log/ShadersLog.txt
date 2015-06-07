@@ -1,0 +1,15 @@
+[21:14:20] Shaders constructor
+[21:14:21] vertexSphere.frag does not exist, should quit
+[21:14:21] setGLSLString success
+[21:14:21] C:\Users\Bruce\Documents\Cinder\Cinder0.8.6\bruce\vSphereOnGithub\assets\0.glsl loaded and compiled
+[21:14:21] setGLSLString success
+[21:14:21] C:\Users\Bruce\Documents\Cinder\Cinder0.8.6\bruce\vSphereOnGithub\assets\1.glsl loaded and compiled
+[21:14:21] setGLSLString success
+[21:14:21] C:\Users\Bruce\Documents\Cinder\Cinder0.8.6\bruce\vSphereOnGithub\assets\2.glsl loaded and compiled
+[21:14:21] C:\Users\Bruce\Documents\Cinder\Cinder0.8.6\bruce\vSphereOnGithub\assets\3.glsl does not exist
+[21:14:21] C:\Users\Bruce\Documents\Cinder\Cinder0.8.6\bruce\vSphereOnGithub\assets\4.glsl does not exist
+[21:14:21] C:\Users\Bruce\Documents\Cinder\Cinder0.8.6\bruce\vSphereOnGithub\assets\5.glsl does not exist
+[21:14:21] C:\Users\Bruce\Documents\Cinder\Cinder0.8.6\bruce\vSphereOnGithub\assets\6.glsl does not exist
+[21:14:21] C:\Users\Bruce\Documents\Cinder\Cinder0.8.6\bruce\vSphereOnGithub\assets\7.glsl does not exist
+[21:20:8] Shaders destructor
+[21:20:8] quit
